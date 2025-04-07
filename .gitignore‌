@@ -1,0 +1,16 @@
+# 忽略 Node.js 依赖
+node_modules/
+
+iunCloud
+
+# 忽略 Python 虚拟环境
+venv/
+.venv/
+
+# 忽略 Java 构建文件
+target/
+*.jar
+
+# 忽略 IDE 配置文件
+.idea/
+.vscode/
