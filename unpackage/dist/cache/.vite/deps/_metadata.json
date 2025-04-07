@@ -1,0 +1,15 @@
+{
+  "hash": "01ed1726",
+  "configHash": "ddbe1553",
+  "lockfileHash": "bc67efdb",
+  "browserHash": "ba494b90",
+  "optimized": {
+    "crypto-js": {
+      "src": "../../../../../node_modules/crypto-js/index.js",
+      "file": "crypto-js.js",
+      "fileHash": "f7d1f34e",
+      "needsInterop": true
+    }
+  },
+  "chunks": {}
+}

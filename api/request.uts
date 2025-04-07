@@ -1,0 +1,82 @@
+// src/api/request.js
+import config from '@/common/config'; // 引入配置文件
+
+class Request {
+  constructor() {
+    this.baseURL = config.apiBaseUrl; // 从配置读取API地址
+    this.timeout = 10000; // 超时时间
+  }
+
+  // 核心请求方法
+  async request(options) {
+    // 合并配置
+    const mergedOptions = {
+      url: `${this.baseURL}${options.url}`,
+      method: options.method || 'GET',
+      header: {
+        'Content-Type': 'application/json',
+        'Authorization': uni.getStorageSync('token') || '',
+        ...options.header
+      },
+      data: options.data || {},
+      timeout: this.timeout
+    };
+
+    // 显示加载状态（可选）
+    if (options.showLoading) uni.showLoading({ title: '加载中...' });
+
+    try {
+      const response = await uni.request(mergedOptions);
+      
+      // 统一处理HTTP状态码
+      if (response.statusCode !== 200) {
+        return this._handleError(response);
+      }
+
+      // 处理业务逻辑错误（根据API返回结构调整）
+      if (response.data.code !== 0) {
+        return this._handleBusinessError(response.data);
+      }
+
+      return response.data;
+    } catch (error) {
+      return this._handleError(error);
+    } finally {
+      if (options.showLoading) uni.hideLoading();
+    }
+  }
+
+  // 错误处理
+  _handleError(error) {
+    console.error('请求错误:', error);
+    uni.showToast({
+      title: `网络错误: ${error.errMsg || '未知错误'}`,
+      icon: 'none'
+    });
+    return Promise.reject(error);
+  }
+
+  // 业务错误处理
+  _handleBusinessError(data) {
+    console.error('业务错误:', data);
+    uni.showToast({
+      title: data.message || '操作失败',
+      icon: 'none'
+    });
+    return Promise.reject(data);
+  }
+
+  // 快捷方法封装
+  get(url, data, options = {}) {
+    return this.request({ url, method: 'GET', data, ...options });
+  }
+
+  post(url, data, options = {}) {
+    return this.request({ url, method: 'POST', data, ...options });
+  }
+
+  // 其他方法...
+}
+
+// 导出单例
+export default new Request();

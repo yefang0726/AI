@@ -1,0 +1,79 @@
+/**
+ * 类型安全的深拷贝函数
+ * @param source 需要拷贝的源数据
+ * @param cache 用于缓存已拷贝对象（解决循环引用）
+ */
+export function deepClone<T>(source: T, cache = new WeakMap<any, any>()): T {
+  // 处理基本类型和函数
+  if (source === null || typeof source !== 'object') {
+    return source
+  }
+
+  // 处理特殊对象类型
+  if (source instanceof Date) {
+    return new Date(source) as T
+  }
+
+  if (source instanceof RegExp) {
+    return new RegExp(source.source, source.flags) as T
+  }
+
+  // 处理 DOM 元素
+  if (source instanceof Node) {
+    return source.cloneNode(true) as T
+  }
+
+  // 检查循环引用
+  if (cache.has(source)) {
+    return cache.get(source)
+  }
+
+  // 初始化克隆对象
+  let clone: any
+  if (Array.isArray(source)) {
+    clone = [] as unknown[]
+    cache.set(source, clone)
+    for (let i = 0; i < source.length; i++) {
+      clone[i] = deepClone(source[i], cache)
+    }
+  } else {
+    clone = Object.create(Object.getPrototypeOf(source))
+    cache.set(source, clone)
+    for (const key of Reflect.ownKeys(source)) {
+      const descriptor = Object.getOwnPropertyDescriptor(source, key)!
+      if (descriptor.value) {
+        descriptor.value = deepClone(descriptor.value, cache)
+      }
+      Object.defineProperty(clone, key, descriptor)
+    }
+  }
+
+  return clone
+}
+
+// 类型测试用例
+interface TestData {
+  date: Date
+  regex: RegExp
+  arr: Array<{ nested: string }>
+  obj: {
+    circular?: TestData
+  }
+}
+
+const original: TestData = {
+  date: new Date(),
+  regex: /test/gi,
+  arr: [{ nested: 'value' }],
+  obj: {}
+}
+original.obj.circular = original // 循环引用
+
+const cloned = deepClone(original)
+
+// 验证拷贝结果
+console.assert(cloned !== original)
+console.assert(cloned.date !== original.date)
+console.assert(cloned.regex !== original.regex)
+console.assert(cloned.arr !== original.arr)
+console.assert(cloned.obj.circular === cloned) // 循环引用检测
