@@ -1,7 +1,13 @@
 # 忽略 Node.js 依赖
 node_modules/
 
-iunCloud
+iunCloud/
+
+.hbuilderx/
+
+uni_modules/
+
+unpackage/
 
 # 忽略 Python 虚拟环境
 venv/
