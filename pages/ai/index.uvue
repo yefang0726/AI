@@ -15,10 +15,12 @@
 
 <script>
 import CryptoJS from 'crypto-js'; // 需要安装crypto-js库
-
-const apiKey = 'your_api_key';      // 替换为你的API Key
-const apiSecret = 'your_api_secret'; // 替换为你的API Secret
-const appid = 'your_appid';          // 替换为你的AppID
+const appid = 'a1ae023a';
+const apiSecret = 'NDQ3YTAwMzlkMjc5NDYxNjdjNjlkY2Q3';
+const apiKey = 'e6373428d522b0a136996938126421fa';
+// const apiKey = 'your_api_key';      // 替换为你的API Key
+// const apiSecret = 'your_api_secret'; // 替换为你的API Secret
+// const appid = 'your_appid';          // 替换为你的AppID
 			
 export default {
   data() {
@@ -28,9 +30,9 @@ export default {
       socketTask: null,
 			textCont:[]
     };
-  },
+  }, 
   methods: {
-		// 确保连接可用的方法
+		// 确保连接可用的方法1
 		async ensureConnection() {
 		  if (!this.socketTask || this.socketTask.readyState !== 1) {
 		    await new Promise((resolve, reject) => {
